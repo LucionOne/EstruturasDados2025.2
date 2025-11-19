@@ -615,15 +615,5 @@ public void ReordenarPorPrioridade(DiKnot<T> node)
     /// </summary>
     public void Sort(System.Collections.Generic.IComparer<T>? comparer) => Sort(comparer is null ? null : comparer.Compare);
 
-    // public void ChangePriority(string name, string newPriority)
-    // {
-    //     foreach (var item in items)
-    //     {
-
-    //     }
-    // }
-
-
-
     #endregion
 }

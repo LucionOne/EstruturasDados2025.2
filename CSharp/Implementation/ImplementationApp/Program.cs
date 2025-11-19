@@ -6,14 +6,12 @@ using DataStructures.Nodes;
 
 class Program
 {
-    // A lista principal do sistema
     private static MyList<Item> lista = new MyList<Item>();
 
     static void Main(string[] args)
     {
         int op = -1;
 
-        // Adiciona um item inicial para teste
         lista.Add(new Item("Leite", 2, DateTime.Now.AddDays(-1), TagTypes.Alimentos, PriorityTypes.Media, StatusTypes.Pendente));
         lista.Add(new Item("Sabão em Pó", 1, DateTime.Now, TagTypes.Limpeza, PriorityTypes.Alta, StatusTypes.Pendente));
 
@@ -261,7 +259,6 @@ class Program
             return;
         }
 
-        // Agrupa os itens em 3 listas auxiliares para exibição ordenada
         var alta = new MyList<Item>();
         var media = new MyList<Item>();
         var baixa = new MyList<Item>();
