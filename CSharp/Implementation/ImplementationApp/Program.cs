@@ -12,8 +12,8 @@ class Program
     {
         int op = -1;
 
-        lista.Add(new Item("Leite", 2, DateTime.Now.AddDays(-1), TagTypes.Alimentos, PriorityTypes.Media, StatusTypes.Pendente));
-        lista.Add(new Item("Sabão em Pó", 1, DateTime.Now, TagTypes.Limpeza, PriorityTypes.Alta, StatusTypes.Pendente));
+        // lista.Add(new Item("Leite", 2, DateTime.Now.AddDays(-1), TagTypes.Alimentos, PriorityTypes.Media, StatusTypes.Pendente));
+        // lista.Add(new Item("Sabão em Pó", 1, DateTime.Now, TagTypes.Limpeza, PriorityTypes.Alta, StatusTypes.Pendente));
 
 
         while (op != 0)
@@ -65,8 +65,6 @@ class Program
             }
         }
     }
-
-    // --- Funcionalidades Obrigatórias ---
 
     static void AdicionarItem()
     {
@@ -178,7 +176,6 @@ class Program
         Console.Write("Nome do item: ");
         string nome = Console.ReadLine()?.Trim() ?? string.Empty;
 
-        // Buscar o nó para reordenação
         DiKnot<Item>? nodeToUpdate = null;
         int index = 0;
         foreach (var node in lista.Nodes()) 
@@ -206,8 +203,7 @@ class Program
         item.RegistrarAlteracao("Prioridade", DateTime.Now, valorAntigo, valorNovo);
 
         item.Prioridade = novaPrioridade;
-        
-        // Chama o método da lista encadeada para remover e reinserir o nó
+
         lista.ReordenarPorPrioridade(nodeToUpdate);
 
         Console.WriteLine($"Prioridade do item '{nome}' alterada para **{novaPrioridade}** e lista reordenada (Alta vai para o topo).");
@@ -304,16 +300,12 @@ class Program
         }
         else
         {
-            // Exibir do mais recente para o mais antigo (ReadTail)
             foreach (var log in itemToView.HistoricoAlteracoes.ReadTail())
             {
                 Console.WriteLine($"- {log}");
             }
         }
     }
-
-
-    // --- Métodos Auxiliares ---
 
     static void ExibirItens(MyList<Item> lista, string? titulo = null)
     {
