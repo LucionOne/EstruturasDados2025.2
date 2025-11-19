@@ -1,5 +1,6 @@
 using DataStructures.Nodes;
 using System.Reflection;
+using Lib.Enums;
 using System.Text;
 
 namespace DataStructures;
@@ -7,7 +8,7 @@ namespace DataStructures;
 /// <summary>
 /// A simple doubly-linked list implementation.
 /// </summary>
-public class MyList<T> : IEnumerable<T>
+public class MyList<T> : IEnumerable<T> where T : IComparable<T>
 {
     private DiKnot<T>? Head = null; // The Top/Root of the List
     private DiKnot<T>? Tail = null; // The last item
@@ -133,6 +134,9 @@ public class MyList<T> : IEnumerable<T>
         return false;
     }
 
+
+
+
     /// <summary>
     /// Remove all occurrences of a value in the list
     /// </summary>
@@ -185,7 +189,66 @@ public class MyList<T> : IEnumerable<T>
     /// </summary>
     public T Pop() => Pop(-1);
 
-    #endregion
+ #endregion
+#region BusinessLogic - Requer que T seja Item
+
+/// <summary>
+/// Remove um nó da lista e o insere no início, se a prioridade for Alta, ou no fim, se for Baixa/Média.
+/// </summary>
+public void ReordenarPorPrioridade(DiKnot<T> node)
+{
+    // Tentativa de cast. Isso só funcionará se T for Item.
+    if (node.Value is Item item) 
+    {
+        var oldHead = Head;
+        
+        // 1. Desliga o nó de sua posição atual
+        Unlink(node); 
+        
+        // 2. Decide onde reinserir
+        if (item.Prioridade == PriorityTypes.Alta)
+        {
+            // Insere no início
+            node.PreviousKnot = null;
+            node.NextKnot = oldHead;
+            
+            if (oldHead is not null)
+            {
+                oldHead.PreviousKnot = node;
+            }
+            else
+            {
+                Tail = node;
+            }
+            
+            Head = node;
+        }
+        else // PriorityTypes.Media ou PriorityTypes.Baixa - Insere no fim
+        {
+            // Insere no fim
+            node.PreviousKnot = Tail;
+            node.NextKnot = null;
+            
+            if (Tail is not null)
+            {
+                Tail.NextKnot = node;
+            }
+            else
+            {
+                Head = node;
+            }
+            
+            Tail = node;
+        }
+        
+        // 3. Incrementa o Length, pois foi decrementado no Unlink
+        Length++;
+    }
+}
+
+#endregion
+
+
 
 
 
@@ -314,7 +377,7 @@ public class MyList<T> : IEnumerable<T>
         CheckIndex(index);
 
         var current = Tail!;
-        for (int i = Length - 1 ; i > index; i--)
+        for (int i = Length - 1; i > index; i--)
             current = current.PreviousKnot!;
         return current;
     }
@@ -323,7 +386,7 @@ public class MyList<T> : IEnumerable<T>
     /// Alias of Nodes_Head() <br/>
     /// Enumerate nodes from Head to Tail
     /// </summary>
-    private IEnumerable<DiKnot<T>> Nodes() => Nodes_Head();
+    public IEnumerable<DiKnot<T>> Nodes() => Nodes_Head();
 
     /// <summary>
     /// Enumerate nodes from Head to Tail
@@ -515,6 +578,52 @@ public class MyList<T> : IEnumerable<T>
         str.Append(']');
         return str.ToString();
     }
+
+    /// <summary>
+    /// Sorts the list in-place using a simple bubble sort by swapping node values.
+    /// Accepts an optional comparison delegate. If none is provided, uses
+    /// `Comparer&lt;T&gt;.Default.Compare`.
+    /// </summary>
+    /// <param name="comparison">Optional comparison delegate: returns &gt;0 if first &gt; second.</param>
+    public void Sort(Comparison<T>? comparison = null)
+    {
+        if (Length < 2) return;
+
+        Comparison<T> cmp = comparison ?? ((x, y) => System.Collections.Generic.Comparer<T>.Default.Compare(x, y));
+
+        bool swapped;
+        do
+        {
+            swapped = false;
+            var current = Head;
+            while (current is not null && current.NextKnot is not null)
+            {
+                if (cmp(current.Value, current.NextKnot.Value) > 0)
+                {
+                    var tmp = current.Value;
+                    current.Value = current.NextKnot.Value;
+                    current.NextKnot.Value = tmp;
+                    swapped = true;
+                }
+                current = current.NextKnot;
+            }
+        } while (swapped);
+    }
+
+    /// <summary>
+    /// Convenience overload that accepts an `IComparer&lt;T&gt;`.
+    /// </summary>
+    public void Sort(System.Collections.Generic.IComparer<T>? comparer) => Sort(comparer is null ? null : comparer.Compare);
+
+    // public void ChangePriority(string name, string newPriority)
+    // {
+    //     foreach (var item in items)
+    //     {
+
+    //     }
+    // }
+
+
 
     #endregion
 }
